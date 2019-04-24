@@ -18,15 +18,6 @@ s = fKreuzUp / math.sqrt(fKreuzUp[0] ** 2 + fKreuzUp[1] ** 2 + fKreuzUp[2] ** 2)
 u = np.cross(s,f)
 
 
-class Ray(object):
-    def __init__(self, ursprung, richtung):
-        self.ursprung = ursprung
-        self.richtung = richtung.normalized()  # laenge 1
-
-    def punktbeiparameter(self, t):
-        return self.ursprung + self.richtung.scale(t)
-
-
 def calcray(x, y):
     return 0
 
@@ -43,8 +34,6 @@ wRes = 400
 hRes = 400
 
 
-
-#Betrachtergeometrie
 pixelWidth = width / (wRes - 1)
 pixelHeight = height / (hRes - 1)
 for y in range(hRes):
