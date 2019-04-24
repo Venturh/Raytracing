@@ -23,19 +23,21 @@ class Camera(object):
         self.image = image
         self.backgroundcolor = backgroundcolor
 
-        self.f = self.c-self.e/ Hilfsklassen.normalisieren(self.c-self.e)
-        self.s = np.cross(self.f, self.up) / Hilfsklassen.normalisieren(np.cross(self.f, self.up))
+        temp = self.c - self.e
+        self.f = self.c-self.e / np.linalg.norm(temp)
+        temp = np.cross(self.f, self.up)
+        self.s = temp / np.linalg.norm(temp)
         self.u = np.cross(self.f, self.s)
 
         self.alpha = self.fieldofview / 2
         self.height = 2 * math.tan(self.alpha)
         self.width = aspectratio * self.height
         self.pixelwidth = self.width / self.wres
-        self.pixelheight = self.height /self.hres
+        self.pixelheight = self.height / self.hres
 
         self.render()
 
-    def calcray(self,x,y):
+    def calcray(self, x, y):
         xcomp = self.s * ((x * self.pixelwidth) - (self.width / 2))
         ycomp = self.u * ((y * self.pixelheight) - (self.height / 2))
         return Klassen.Ray(self.e, self.f + xcomp + ycomp)
@@ -46,31 +48,27 @@ class Camera(object):
                 ray = self.calcray(x, y)
                 maxdist = float('inf')
                 color = self.backgroundcolor
-                for object in self.objectlist:
-                    hitdist = object.intersectionParameter(ray)
+                for objekt in self.objectlist:
+                    hitdist = objekt.intersectionParameter(ray)
                     if hitdist:
                         if hitdist < maxdist:
                             maxdist = hitdist
-                            color = (200,0,0)
+                            print(ray)
+                            #color = (200,0,0)
                 self.image.putpixel((x, y), color)
 
-    def getImage(self):
-        return self.image
 
-
-ebene = Klassen.Plane(np.array([0,1,1]), np.array([1,1,1]))
+ebene = Klassen.Plane(np.array([0,1,0]), np.array([1,1,1]))
 e = np.array([0, 1.8, 10])
 c = np.array([0,3, 0])
 up = np.array([0, 1, 0])
-im = im.new("RGB", (400, 400), "black")
+im = im.new("RGB", (400, 400))
 fow = 45
 aspect = 400/400
 objectlist = [ebene]
 
 camera = Camera(e,c,up,aspect,fow,400,400,objectlist,im,(0,0,0))
-
-
-final = camera.getImage()
+final = camera.image
 final.show()
 
 

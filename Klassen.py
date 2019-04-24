@@ -1,10 +1,13 @@
 class Ray(object):
-    def __init__(self, ursprung, richtung):
-        self.origin = ursprung
-        self.direction = richtung  # laenge 1
+    def __init__(self, origin, direction):
+        self.origin = origin
+        self.direction = direction  # laenge 1
 
     def punktbeiparameter(self, t):
-        return self.ursprung + self.richtung.scale(t)
+        return self.origin + self.direction * t
+
+    def __repr__(self):
+        return 'Ray(%s,%s)' %(repr(self.origin),repr(self.direction))
 
 
 class Plane(object):
