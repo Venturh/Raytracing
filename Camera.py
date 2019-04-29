@@ -1,9 +1,6 @@
+from Objects import Ray
 import numpy as np
-from PIL import Image as im
 import math
-import Hilfsklassen
-import Klassen
-
 
 
 class Camera(object):
@@ -35,12 +32,10 @@ class Camera(object):
         self.pixelwidth = self.width / self.wres
         self.pixelheight = self.height / self.hres
 
-        self.render()
-
     def calcray(self, x, y):
         xcomp = self.s * ((x * self.pixelwidth) - (self.width / 2))
         ycomp = self.u * ((y * self.pixelheight) - (self.height / 2))
-        return Klassen.Ray(self.e, self.f + xcomp + ycomp)
+        return Ray.Ray(self.e, self.f + xcomp + ycomp)
 
     def render(self):
         for x in range(self.wres):
@@ -48,28 +43,19 @@ class Camera(object):
                 ray = self.calcray(x, y)
                 maxdist = float('inf')
                 color = self.backgroundcolor
-                for objekt in self.objectlist:
-                    hitdist = objekt.intersectionParameter(ray)
+                for object in self.objectlist:
+                    hitdist = object.intersectionParameter(ray)
                     if hitdist:
-                        if hitdist < maxdist:
+                        if 0 < hitdist < maxdist:
                             maxdist = hitdist
-                            print(ray)
-                            #color = (200,0,0)
-                self.image.putpixel((x, y), color)
+                            #print(ray)
+                            color = (255,255,255)
+                    else:
+                        color = (0,0,0)
+                self.image.putpixel((x, int(self.height - y - 1)), color)
 
 
-ebene = Klassen.Plane(np.array([0,1,0]), np.array([1,1,1]))
-e = np.array([0, 1.8, 10])
-c = np.array([0,3, 0])
-up = np.array([0, 1, 0])
-im = im.new("RGB", (400, 400))
-fow = 45
-aspect = 400/400
-objectlist = [ebene]
 
-camera = Camera(e,c,up,aspect,fow,400,400,objectlist,im,(0,0,0))
-final = camera.image
-final.show()
 
 
 
