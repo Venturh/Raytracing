@@ -1,14 +1,14 @@
 import numpy as np
 
+
 class Triangle(object):
 
-    def __init__(self, a, b, c, material):
+    def __init__(self, a, b, c,):
         self.a = a
         self.b = b
         self.c = c
-        self.u = b - a
-        self.v = c - a
-        self.material = material
+        self.u = self.b - self.a
+        self.v = self.c - self.a
 
     def __repr__(self):
         return 'Dreieck(%s, %s, %s)' %(repr(self.a), repr(self.b), repr(self.c))
@@ -22,12 +22,11 @@ class Triangle(object):
         wu = np.cross(w, self.u)
         r = np.dot(dv, w) / dvu
         s = np.dot(wu, ray.direction) / dvu
-        if 0 <= r <= 1 and 0 <= s <= 1 and r+s <= 1:
+        if 0 <= r <= 1 and 0 <= s <= 1 and r + s <= 1:
             return np.dot(wu, self.v) / dvu
         else:
             return None
 
     def normalAt(self, p):
-        temp = np.cross(self.u, self.v)
-        return temp / np.linalg.norm(temp)
+        return np.cross(self.u, self.v) / np.linalg.norm(np.cross(self.u, self.v))
 
