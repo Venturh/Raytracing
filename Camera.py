@@ -1,6 +1,8 @@
-from Objects import Ray
 import numpy as np
 import math
+
+
+from Objects.Ray import Ray
 
 
 class Camera(object):
@@ -20,10 +22,8 @@ class Camera(object):
         self.image = image
         self.backgroundcolor = backgroundcolor
 
-        temp = self.c - self.e
-        self.f = self.c-self.e / np.linalg.norm(temp)
-        temp = np.cross(self.f, self.up)
-        self.s = temp / np.linalg.norm(temp)
+        self.f = self.c-self.e / np.linalg.norm(c - e)
+        self.s = np.cross(self.f, self.up) / np.linalg.norm(np.cross(self.f, self.up))
         self.u = np.cross(self.f, self.s)
 
         self.alpha = self.fieldofview / 2
@@ -33,9 +33,9 @@ class Camera(object):
         self.pixelheight = self.height / self.hres
 
     def calcray(self, x, y):
-        xcomp = self.s * ((x * self.pixelwidth) - (self.width / 2))
-        ycomp = self.u * ((y * self.pixelheight) - (self.height / 2))
-        return Ray.Ray(self.e, self.f + xcomp + ycomp)
+        xcomp = self.s * (x * self.pixelwidth - self.width / 2)
+        ycomp = self.u * (y * self.pixelheight - self.height / 2)
+        return Ray(self.e, self.f + xcomp + ycomp)
 
     def render(self):
         for x in range(self.wres):
@@ -45,11 +45,10 @@ class Camera(object):
                 color = self.backgroundcolor
                 for object in self.objectlist:
                     hitdist = object.intersectionParameter(ray)
-                    if hitdist:
-                        if 0 < hitdist < maxdist:
-                            maxdist = hitdist
-                            #print(ray)
-                            color = (255,255,255)
+                    if hitdist and  hitdist < maxdist:
+                        maxdist = hitdist
+                        #print(ray)
+                        color = (255,255,255)
                     else:
                         color = (0,0,0)
                 self.image.putpixel((x, int(self.height - y - 1)), color)
