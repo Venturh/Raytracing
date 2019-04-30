@@ -18,8 +18,8 @@ background = np.array([1, 1, 1])
 
 camera = Camera(e, c, up, fov, 1, height, width)
 pl = Plane(np.array([0, 0, 0]), np.array([0, 1, 0]))
-s1 = Sphere(np.array([3, 3, -5]), 1)
-s2 = Sphere(np.array([-3, 3, -5]), 1)
+s1 = Sphere(np.array([3, 1, -1]), 1)
+s2 = Sphere(np.array([-3, 1, -1]), 1)
 s3 = Sphere(np.array([1.5, 0.5, 1]), 1)
 tr = Triangle(np.array([1.5, 0.5, 0.5]), np.array([0, 3, 0.5]), np.array([-1.5, 0.5, 0.5]))
 objectlist = []

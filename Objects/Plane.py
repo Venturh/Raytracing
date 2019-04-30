@@ -15,7 +15,7 @@ class Plane(object):
         b = np.dot(ray.direction, self.normal)
         if b:
             temp = -(a / b)
-            if temp >0:
+            if temp > 0:
                 return -(a/b)
             else:
                 return None
