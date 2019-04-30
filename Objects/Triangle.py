@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class Triangle(object):
 
     def __init__(self, a, b, c, material):
@@ -14,15 +13,15 @@ class Triangle(object):
     def __repr__(self):
         return 'Dreieck(%s, %s, %s)' %(repr(self.a), repr(self.b), repr(self.c))
 
-    def intersectionParameter(self, strahl):
-        w = strahl.ursprung - self.a
-        dv = np.cross(strahl.richtung, self.v)
+    def intersectionParameter(self, ray):
+        w = ray.origin - self.a
+        dv = np.cross(ray.direction, self.v)
         dvu = np.dot(dv, self.u)
         if dvu == 0.0:
             return None
         wu = np.cross(w, self.u)
         r = np.dot(dv, w) / dvu
-        s = np.dot(wu, strahl.richtung) / dvu
+        s = np.dot(wu, ray.direction) / dvu
         if 0 <= r <= 1 and 0 <= s <= 1 and r+s <= 1:
             return np.dot(wu, self.v) / dvu
         else:
@@ -31,3 +30,4 @@ class Triangle(object):
     def normalAt(self, p):
         temp = np.cross(self.u, self.v)
         return temp / np.linalg.norm(temp)
+

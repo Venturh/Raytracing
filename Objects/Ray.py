@@ -5,7 +5,7 @@ class Ray(object):
 
 
     def intersectionParameter(self, t):
-        return self.origin + self.direction * t
+        return self.origin + self.direction.scale(t)
 
     def __repr__(self):
         return 'Ray(%s,%s)' %(repr(self.origin),repr(self.direction))

@@ -45,24 +45,8 @@ class Camera(object):
                 color = self.backgroundcolor
                 for object in self.objectlist:
                     hitdist = object.intersectionParameter(ray)
-                    if hitdist and  hitdist < maxdist:
+                    if hitdist and hitdist < maxdist:
                         maxdist = hitdist
-                        #print(ray)
-                        color = (255,255,255)
-                    else:
-                        color = (0,0,0)
+                        # print(ray)
+                        color = (255, 255, 255)
                 self.image.putpixel((x, int(self.height - y - 1)), color)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
