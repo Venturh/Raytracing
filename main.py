@@ -4,6 +4,8 @@ from Camera import Camera
 from Objects.Sphere import Sphere
 from Objects.Triangle import Triangle
 from Objects.Plane import Plane
+from Objects.Light import Light
+from Objects.Ray import Ray
 
 
 width = 400
@@ -17,6 +19,7 @@ image = np.zeros((height, width, 3))
 background = np.array([1, 1, 1])
 
 camera = Camera(e, c, up, fov, 1, height, width)
+light = Light(np.array([30, 30, 10]),  np.array([255, 255, 255]))
 pl = Plane(np.array([0, 0, 0]), np.array([0, 1, 0]))
 s1 = Sphere(np.array([3, 1, -1]), 1)
 s2 = Sphere(np.array([-3, 1, -1]), 1)
@@ -29,6 +32,27 @@ objectlist.append(s2)
 objectlist.append(s3)
 objectlist.append(tr)
 
+
+def getDist(ray):
+    hitobject = None
+    maxdist = float('inf')
+
+    for object in objectlist:
+        hitdist = object.intersectionParameter(ray)
+        if hitdist and hitdist < maxdist:
+            maxdist = hitdist
+            hitobject = object
+        return (maxdist, hitobject)
+
+
+def hasshadow(lightray,actobject,objectlist):
+    for object in objectlist:
+        if object != actobject:
+            hitdist = object.intersectionParameter(lightray)
+            if hitdist > 0:
+                return True
+    return False
+
 for x in range(width):
     for y in range(height):
         ray = camera.calcray(x, y)
@@ -36,6 +60,9 @@ for x in range(width):
         color = background
         for object in objectlist:
             hitdist = object.intersectionParameter(ray)
+            if hitdist != None:
+                lightray = Ray(hitdist, light.origin - hitdist)
+                #print(lightray)
             if hitdist and hitdist < maxdist:
                 maxdist = hitdist
                 color = np.array([1/hitdist, 1/hitdist, 1/hitdist])
