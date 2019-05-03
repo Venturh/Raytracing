@@ -2,9 +2,10 @@ import math
 import numpy as np
 
 class Sphere(object):
-    def __init__(self, center, radius):
+    def __init__(self, center, radius, material):
         self.center = center # point
         self.radius = radius # scalar
+        self.material = material
 
     def __repr__(self):
         return 'Sphere(%s,%s)' % (repr(self.center), self.radius)
@@ -20,4 +21,7 @@ class Sphere(object):
 
     def normalAt(self, p):
         return (p - self.center) / np.linalg.norm(p - self.center)
+
+    def getMaterial(self):
+        return  self.material
 

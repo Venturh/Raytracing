@@ -5,6 +5,6 @@ class Light(object):
         self.origin = origin
         self.color = color
 
-    def dist(self ,ray):
-        return self.origin - ray.origin/ray.direction
+    def distance(self, ray):
+        return self.origin[0] - ray.origin[0]/ray.direction[0]
 

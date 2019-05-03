@@ -10,5 +10,5 @@ class Ray(object):
         return 'Ray(%s,%s)' %(repr(self.origin),repr(self.direction))
 
     def intersectionParameter(self, t):
-        return self.origin + self.direction.scale(t)
+        return self.origin + self.direction * t
 

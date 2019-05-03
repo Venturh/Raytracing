@@ -2,9 +2,10 @@ import numpy as np
 
 
 class Plane(object):
-    def __init__(self, point, normal):
+    def __init__(self, point, normal,material):
         self.point = point  # point
         self.normal = normal / np.linalg.norm(normal)
+        self.material = material
 
     def __repr__(self):
         return 'Plane(%s,%s)' % (repr(self.point), repr(self.normal))
@@ -24,3 +25,6 @@ class Plane(object):
 
     def normalAt(self, p):
         return self.normal
+
+    def getMaterial(self):
+        return self.material

@@ -3,12 +3,13 @@ import numpy as np
 
 class Triangle(object):
 
-    def __init__(self, a, b, c,):
+    def __init__(self, a, b, c, material):
         self.a = a
         self.b = b
         self.c = c
         self.u = self.b - self.a
         self.v = self.c - self.a
+        self.material = material
 
     def __repr__(self):
         return 'Dreieck(%s, %s, %s)' %(repr(self.a), repr(self.b), repr(self.c))
@@ -29,4 +30,7 @@ class Triangle(object):
 
     def normalAt(self, p):
         return np.cross(self.u, self.v) / np.linalg.norm(np.cross(self.u, self.v))
+
+    def getMaterial(self):
+        return self.material
 
