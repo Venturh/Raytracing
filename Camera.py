@@ -22,3 +22,11 @@ class Camera(object):
         xcomp = self.s * (x * self.pixelwidth - self.width / 2)
         ycomp = self.u * (y * self.pixelheight - self.height / 2)
         return Ray(self.e, self.f + xcomp + ycomp)
+
+    def rays(self, x, y, wRes, hRes):
+        rays = []
+        for x in range(wRes):
+            for y in range(hRes):
+                ray = self.calcray(x, y)
+                rays.append(ray)
+        return rays

@@ -11,11 +11,12 @@ from Material import CheckerBoardMaterial
 import threading
 
 
+
 class RayTracing(object):
 
     def __init__(self):
-        self.width = 400
-        self.height = 400
+        self.width = 100
+        self.height = 100
         self.e = np.array([0, 1.8, 10])
         self.c = np.array([0, 3, 0])
         self.up = np.array([0, 1, 0])
@@ -26,31 +27,40 @@ class RayTracing(object):
         self.camera = Camera(self.e, self.c, self.up, self.fov, 1, self.height, self.width)
         self.light = Light(np.array([30, 30, 10]), np.array([255, 255, 255]))
         self.objectlist = [
-            Sphere(np.array([0, 3, 1]), 1, Material(np.array([255, 0, 0]))),
-            Sphere(np.array([-1.5, 0.5, 1]), 1, Material(np.array([0, 255, 0]))),
-            Sphere(np.array([1.5, 0.5, 1]), 1, Material(np.array([0, 0, 255]))),
-            Triangle(np.array([1.5, 0.5, 0.5]), np.array([0, 3, 0.5]), np.array([-1.5, 0.5, 0.5]), Material(np.array([255, 255, 0]))),
-            Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), CheckerBoardMaterial())
+            Sphere(np.array([0, 3, 1]), 1, Material(np.array([255, 0, 0]), True)),
+            Sphere(np.array([-1.5, 0.5, 1]), 1, Material(np.array([0, 255, 0]), True)),
+            Sphere(np.array([1.5, 0.5, 1]), 1, Material(np.array([0, 0, 255]), True)),
+            Triangle(np.array([1.5, 0.5, 0.5]), np.array([0, 3, 0.5]), np.array([-1.5, 0.5, 0.5]), Material(np.array([255, 255, 0]), False)),
+            Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), CheckerBoardMaterial(False))
+            #Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), Material(np.array([128, 128, 128]), False))
             ]
+
 
     def calcColor(self, ray):
         maxdist = float('inf')
-        hitdist = None
-        hitobject = None
-        for obj in self.objectlist:
-            hitdist = obj.intersectionParameter(ray)
-            if hitdist and hitdist < maxdist:
-                hitobject = obj
-                break
-        if not hitobject:
+        obj = None
+        for object in self.objectlist:
+            hitdist = object.intersectionParameter(ray)
+            if hitdist and 0 < hitdist < maxdist:
+                maxdist = hitdist
+                obj = object
+                break;
+
+        if not hitdist:
             return self.background
 
-        colorObject = obj.material.colorAt(ray.intersectionParameter(hitdist))
-        colorPhong = self.phongMagic(obj, hitdist, ray)
-        color = colorObject * colorPhong
+        objectColor = obj.material.colorAt(ray.intersectionParameter(hitdist))
+        phongColor = self.phongMagic(obj, hitdist, ray)
+        color = objectColor * phongColor
+
+        if obj.material.reflecting:
+            hp = ray.intersectionParameter(hitdist)
+            d = ray.direction
+            n = obj.normalAt(hp)
+            color += self.calcColor(Ray(hp, d - (2 * np.dot(n, d) * n)))
 
         if self.shadows(ray, hitdist):
-            color = color * 0.3
+            color *= 0.3
 
         return color
 
@@ -59,8 +69,8 @@ class RayTracing(object):
         n = obj.normalAt(hit)
         direction = ray.direction / np.linalg.norm(ray.direction)
 
-        ca = self.light.color # Lichtfarbe
-        ka = obj.material.ambient # Materialkonstante
+        ca = self.light.color  #Lichtfarbe
+        ka = obj.material.ambient  #Materialkonstante
         ambient = ca * ka
 
         cin = ca
@@ -88,19 +98,27 @@ class RayTracing(object):
                 return True
         return False
 
-
-
-
-
+    def worker(self,pool, ray):
+        return pool.append(self.calcColor(ray))
 
     def render(self):
+        rays = []
         for x in range(self.width):
             for y in range(self.height):
-                ray = self.camera.calcray(x, y)
-                color = self.calcColor(ray)
-                self.image[self.height - y - 1][x] = color
-        im.imsave('render.png', self.image)
-        print("done")
+                rays.append(self.camera.calcray(x, y))
+
+        pool = []
+        for ray in rays:
+            thread = threading.Thread(target=self.worker(pool, ray))
+            thread.start()
+
+        i = 0
+        for x in range(self.width):
+            for y in range(self.height):
+                self.image[self.height - y - 1][x] = pool[i]
+                i += 1
+
+        im.imsave("render.png", self.image)
 
 
 if __name__ == "__main__":

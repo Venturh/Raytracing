@@ -2,12 +2,13 @@ import numpy as np
 
 class Material(object):
 
-    def __init__(self,color):
+    def __init__(self,color, reflecting):
         self.color = color
         self.ambient = 0.4
         self.diffuse = 0.4
         self.specular = 0.2
         self.surface = 32
+        self.reflecting = reflecting
 
     def colorAt(self,p):
         return self.color
@@ -15,7 +16,7 @@ class Material(object):
 
 class CheckerBoardMaterial(object):
 
-    def __init__(self):
+    def __init__(self, reflecting):
         self.black = np.array([255, 255, 255])
         self.white = np.array([0, 0, 0])
         self.ambient = 1
@@ -23,6 +24,7 @@ class CheckerBoardMaterial(object):
         self.specular = 0.2
         self.surface = 32
         self.checkSize = 1
+        self.reflecting = reflecting
 
     def colorAt(self, p):
         v = p * (1.0 / self.checkSize)
