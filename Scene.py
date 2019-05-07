@@ -9,14 +9,15 @@ from Objects.Light import Light
 from Material import Material
 from Material import CheckerBoardMaterial
 import threading
+import logging
 
 
 
 class RayTracing(object):
 
     def __init__(self):
-        self.width = 100
-        self.height = 100
+        self.width = 400
+        self.height = 400
         self.e = np.array([0, 1.8, 10])
         self.c = np.array([0, 3, 0])
         self.up = np.array([0, 1, 0])
@@ -26,24 +27,30 @@ class RayTracing(object):
 
         self.camera = Camera(self.e, self.c, self.up, self.fov, 1, self.height, self.width)
         self.light = Light(np.array([30, 30, 10]), np.array([255, 255, 255]))
+
+        reflecting = True
+        checkerboard = False
         self.objectlist = [
-            Sphere(np.array([0, 3, 1]), 1, Material(np.array([255, 0, 0]), True)),
-            Sphere(np.array([-1.5, 0.5, 1]), 1, Material(np.array([0, 255, 0]), True)),
-            Sphere(np.array([1.5, 0.5, 1]), 1, Material(np.array([0, 0, 255]), True)),
-            Triangle(np.array([1.5, 0.5, 0.5]), np.array([0, 3, 0.5]), np.array([-1.5, 0.5, 0.5]), Material(np.array([255, 255, 0]), False)),
-            Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), CheckerBoardMaterial(False))
-            #Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), Material(np.array([128, 128, 128]), False))
+            Sphere(np.array([0, 3, 1]), 1, Material(np.array([255, 0, 0]), reflecting)),
+            Sphere(np.array([-1.5, 0.5, 1]), 1, Material(np.array([0, 255, 0]), reflecting)),
+            Sphere(np.array([1.5, 0.5, 1]), 1, Material(np.array([0, 0, 255]), reflecting)),
+            Triangle(np.array([1.5, 0.5, 0.5]), np.array([0, 3, 0.5]), np.array([-1.5, 0.5, 0.5]), Material(np.array([255, 255, 0]), False))
             ]
+        if checkerboard:
+            plane = Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), CheckerBoardMaterial(False))
+        else:
+            plane = Plane(np.array([0, -1, 0]), np.array([0, 1, 0]), Material(np.array([128, 128, 128]), False))
+
+        self.objectlist.append(plane)
 
 
     def calcColor(self, ray):
+
         maxdist = float('inf')
-        obj = None
-        for object in self.objectlist:
-            hitdist = object.intersectionParameter(ray)
+        for obj in self.objectlist:
+            hitdist = obj.intersectionParameter(ray)
             if hitdist and 0 < hitdist < maxdist:
                 maxdist = hitdist
-                obj = object
                 break;
 
         if not hitdist:
@@ -107,10 +114,13 @@ class RayTracing(object):
             for y in range(self.height):
                 rays.append(self.camera.calcray(x, y))
 
+        threads = []
         pool = []
         for ray in rays:
             thread = threading.Thread(target=self.worker(pool, ray))
+            threads.append(thread)
             thread.start()
+            thread.join()
 
         i = 0
         for x in range(self.width):
