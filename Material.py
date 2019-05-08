@@ -2,7 +2,7 @@ import numpy as np
 
 class Material(object):
 
-    def __init__(self,color, reflecting):
+    def __init__(self, color, reflecting):
         self.color = color
         self.ambient = 0.4
         self.diffuse = 0.4

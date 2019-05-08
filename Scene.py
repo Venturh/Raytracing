@@ -12,7 +12,6 @@ import threading
 import logging
 
 
-
 class RayTracing(object):
 
     def __init__(self):
@@ -29,7 +28,7 @@ class RayTracing(object):
         self.light = Light(np.array([30, 30, 10]), np.array([255, 255, 255]))
 
         reflecting = True
-        checkerboard = False
+        checkerboard = True
         self.objectlist = [
             Sphere(np.array([0, 3, 1]), 1, Material(np.array([255, 0, 0]), reflecting)),
             Sphere(np.array([-1.5, 0.5, 1]), 1, Material(np.array([0, 255, 0]), reflecting)),
@@ -43,15 +42,13 @@ class RayTracing(object):
 
         self.objectlist.append(plane)
 
-
     def calcColor(self, ray):
 
         maxdist = float('inf')
         for obj in self.objectlist:
             hitdist = obj.intersectionParameter(ray)
             if hitdist and 0 < hitdist < maxdist:
-                maxdist = hitdist
-                break;
+                break
 
         if not hitdist:
             return self.background
